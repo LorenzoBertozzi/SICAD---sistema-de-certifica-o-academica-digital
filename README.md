@@ -1,6 +1,5 @@
 <h1 align="center">SICAD - sistema de certificao academica digital</h1>
 <p  align="center">Desenvolvimento de um sistema integrado para certificação de discentes de forma digital </p>
-<hr>
 
 <p align="center" height=200px>
 <img loading="lazy" src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge">
