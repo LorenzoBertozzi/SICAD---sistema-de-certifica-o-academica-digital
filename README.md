@@ -12,3 +12,32 @@ https://www.figma.com/design/pPeR91u2Bzt5qi3bvoEDj2/Lorenzo-model---More-Happy-a
 
 ### Lukas Model - Site Emissão de Certificados
 https://www.figma.com/design/rmXMn765jTDEmE73RjAQke/Site-Emissão-de-Certificados?node-id=0-1&p=f&t=AXB443qAoXdPoGj6-0
+
+
+## BlockChain - oque é? se aplica ao projeto ? Vale a pena usa-lo ? oque representa do diferencial ?
+
+A blockchain é uma tecnologia de registro distribuído que garante a integridade, imutabilidade e transparência dos dados. Basicamente, é um banco de dados descentralizado onde cada bloco contém informações criptografadas e ligadas ao bloco anterior, formando uma cadeia segura contra fraudes e alterações indevidas.
+
+A blockchain pode ser usada para registrar e validar certificados acadêmicos digitais, garantindo que sejam autênticos, invioláveis e acessíveis publicamente para verificação. Isso resolveria problemas como falsificação de diplomas e dificuldade na validação de credenciais.
+
+Vale a pena usar?
+A blockchain pode:
+
+Garantir a imutabilidade dos certificados.
+Permitir validação descentralizada, sem necessidade de intermediários.
+Criar um sistema mais seguro e transparente.
+Por outro lado, desafios incluem:
+
+Custo: Redes blockchain podem ter taxas de transação.
+Complexidade: Exige infraestrutura específica e integração com smart contracts.
+Diferencial:O uso de blockchain tornaria os certificados autoverificáveis e à prova de fraudes, permitindo que instituições e empregadores validem a autenticidade sem depender de consultas diretas à instituição emissora.
+
+Ethereum (com smart contracts via Solidity)
+Hyperledger Fabric (privada e permissionada)
+Polygon
+
+
+
+
+
+
