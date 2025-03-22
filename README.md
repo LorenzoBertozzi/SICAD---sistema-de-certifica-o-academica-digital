@@ -43,12 +43,21 @@ A certificação digital tem sido amplamente estudada como uma solução para ga
 
 A crescente digitalização dos serviços tem impulsionado o uso da certificação digital em diversas áreas, incluindo a educação. Estudantes tradicionalmente recebem certificados em formato físico, que, apesar de possuírem elementos de segurança, exigem verificações manuais e a manutenção de registros prolongados pelas instituições emissoras (Gräther et al., 2018). Com o avanço das tecnologias, os certificados digitais surgiram como uma alternativa que facilita o armazenamento e a verificação automática, embora enfrentem desafios como a necessidade de um padrão global de assinatura para assegurar a verificação universal (Grech e Camilleri, 2017).
 
-A ausência de um padrão universal para assinaturas digitais dificulta a interoperabilidade entre sistemas de certificação, levando a soluções proprietárias que limitam a verificação de certificados em ecossistemas fechados. Esse problema se agrava diante da crescente incidência de fraudes acadêmicas, com estimativas apontando a existência de mais de trezentas fábricas de diplomas falsos em operação, gerando um mercado que movimenta mais de quinhentos milhões de dólares por ano (Bear e Ezell, 2005). As consequências dessas fraudes impactam diretamente a credibilidade das instituições educacionais e do mercado de trabalho, tornando essencial a adoção de sistemas de certificação digital robustos e confiáveis (Garwe, 2015).
+A ausência de um padrão universal para assinaturas digitais dificulta a interoperabilidade entre sistemas de certificação, levando a soluções proprietárias que limitam a verificação de certificados em ecossistemas fechados. Esse problema se agrava diante da crescente incidência de fraudes acadêmicas, com estimativas apontando a existência de mais de trezentas fábricas de diplomas falsos em operação.
 
 Diante desse cenário, diversas pesquisas abordam a necessidade de padronização e a busca por soluções mais seguras e eficientes para a certificação acadêmica digital. O padrão X.509v3 tem sido amplamente utilizado devido à sua flexibilidade e extensibilidade, permitindo a inclusão de campos adicionais para diferentes aplicações (COOPER et al., 2008). No entanto, a implementação de protocolos padronizados para comunicação entre ACs e ARs ainda é um desafio, uma vez que muitos sistemas utilizam protocolos próprios, gerando incompatibilidades entre diferentes plataformas de certificação.
 Assim, este trabalho se insere nesse contexto ao propor a implementação de um sistema integrado para certificação digital de alunos, explorando tecnologias que garantam a autenticidade, a segurança e a interoperabilidade dos certificados acadêmicos.
 
 SILVÉRIO, Anderson Luiz. Análise e implementação de um protocolo de gerenciamento de certificados. 2011. Trabalho de Conclusão de Curso (Graduação em Ciências da Computação) – Universidade Federal de Santa Catarina, Centro Tecnológico, Florianópolis, 2011. Disponível em: https://repositorio.ufsc.br/handle/123456789/184137.
+
+Gräther, Wolfgang, et al. "Blockchain for education: lifelong learning passport." Proceedings of 1st ERCIM Blockchain workshop 2018. European Society for Socially Embedded Technologies (EUSSET), 2018.
+
+Grech, Alexander, and Anthony F. Camilleri. Blockchain in education. Luxembourg: Publications Office of the European Union, 2017.
+
+COOPER, D. et al. Internet X.509 Public Key Infrastructure Certificate
+and Certificate Revocation List (CRL) Profile. IETF, maio 2008.
+RFC 5280 (Proposed Standard). (Request for Comments, 5280).
+<http://www.ietf.org/rfc/rfc5280.txt>
 
 ANDRADE, Matheus C.; BERTOLDI, Lucas N.; SILVA, Alexandro S.; MATOS, Pablo F.. Sistema de Gerenciamento de Certificados. In: WORKSHOP DE FERRAMENTAS E APLICAÇÕES - SIMPÓSIO BRASILEIRO DE SISTEMAS MULTIMÍDIA E WEB (WEBMEDIA), 28. , 2022, Curitiba. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2022 . p. 99-102. ISSN 2596-1683. DOI: https://doi.org/10.5753/webmedia_estendido.2022.226899.
 
