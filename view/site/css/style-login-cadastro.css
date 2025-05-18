@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+aside{
+    flex: 0.7;
+    background-image: url(../assets/aside-image.png);
+    background-size: cover;
+    background-color: aqua;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for muito longo */
+}
+
+section {
+    flex: 1; /* Ocupa espaço proporcional */
+    padding: 100px 200px 0 200px;
+    overflow-y: auto;
+}
+
+section .logo{
+    display: flex;
+    background-color: #fff;
+    color: #07AE16;
+    margin: 0;
+}
+
+section .logo img{
+    height: 80px;
+}
+
+section .logo #barra-vertical{
+    height: 80px;
+    width: 2px;
+    border-radius: 5px;
+    margin: 0 5px 0 5px ;
+    background-color: #07AE16;
+}
+main{
+    background-color: #fff;
+    margin: 40px 0 40px 0;
+}
+
+main h1{
+    font-weight: 400;
+    font-size: 64px;
+}
+
+main h2{
+    font-weight: 400;
+    font-size: 26px;
+}
+
+main h2 a{
+    text-decoration: none;
+    color :#2192FF
+}
+
+main form{
+    margin-top: 40px;
+}
+
+main form label{
+    font-size: 20px;
+}
+
+main form input{
+    height: 50px;
+    width: 100vh;
+    border: 1px solid #eb0000;
+    border-radius: 16px;
+    margin: 10px 0 10px 0;
+    padding-left: 20px;
+    font-size: 20px;
+}
+
+main form input[type=submit]{
+    background-color: #07AE16;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    border: 0px;
+    margin-bottom: 40px;
+}
+
+main form input[type=checkbox]{
+    position: relative;
+    margin-top: -15px;
+    margin-right: 10px;
+    float: left;
+    width: 20px;
+}
+
+main form p{
+    position: relative;
+    margin-top: -20px;
+    width: 20px;
+    display: left;
+    width: 100%;
+}
+
+main a{
+ font-size: 20px;
+ color: #000;
+}
