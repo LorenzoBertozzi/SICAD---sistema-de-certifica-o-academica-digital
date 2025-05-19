@@ -57,7 +57,7 @@ main{
 
 main h1{
     font-weight: 400;
-    font-size: 64px;
+    font-size: 48px;
 }
 
 main h2{
@@ -80,8 +80,8 @@ main form label{
 
 main form input{
     height: 50px;
-    width: 100vh;
-    border: 1px solid #eb0000;
+    width: 90vh;
+    border: 1px solid #cecece;
     border-radius: 16px;
     margin: 10px 0 10px 0;
     padding-left: 20px;

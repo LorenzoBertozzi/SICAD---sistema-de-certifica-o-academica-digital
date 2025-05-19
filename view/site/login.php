@@ -12,25 +12,14 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
     } else if(strlen($_POST['senha']) == 0) {
         echo "Preencha sua senha";
     } else {
-
         $email = $mysqli->real_escape_string($_POST['email']);
         $senha = $mysqli->real_escape_string($_POST['senha']);
 
-        $sql_code = "SELECT * FROM usuario WHERE email_usuario = '$email' AND senha_usuario = '$senha'";
-        //SELECT * FROM usuario WHERE email_usuario = 'teste@teste.com' AND senha_usuario = '1234';
+        $sql_code = "SELECT * FROM usuario WHERE email_usuario = '$email'";
         $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
 
-        $quantidade = $sql_query->num_rows;
-
-
-        echo $quantidade;
-        echo $email;
-        echo $senha;
-
-        if($quantidade == 1) {
-            
-            $usuario = $sql_query->fetch_assoc();
-
+        $usuario = $sql_query->fetch_assoc();
+        if(password_verify($senha, $usuario['senha_usuario'])){
             if(!isset($_SESSION)) {
                 session_start();
             }
@@ -38,10 +27,10 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
             $_SESSION['id_usuario'] = $usuario['id_usuario'];
             $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
 
-            //header("Location: index.php");
-
-        } else {
-            echo "<script>alert('Falha ao logar! E-mail ou senha incorretos);</script>";
+            header("Location: index.php");
+        }
+        else {
+        echo "<script>alert('Falha ao logar! E-mail ou senha incorretos');</script>";
         }
     }
 }
@@ -52,7 +41,7 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SICAD - Sistema Academico de Certificação Digital</title>
-    <link rel="shortcut icon" type="image/png" href="logo.png"/>
+    <link rel="icon" href="assets/miniatura.png">
     <link rel="stylesheet" href="css/style-login-cadastro.css">
 </head>
 <body>
@@ -65,7 +54,7 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
         </div>
         <main>
             <h1>Acesse sua conta</h1>
-            <h2>Ainda nao tem conta ? <a href="cadastro.html">clique aqui para criar uma</a></h2>
+            <h2>Ainda nao tem conta ? <a href="cadastro.php">clique aqui para criar uma</a></h2>
             <form action="" method="POST">                    
                 <label for="email">E-mail</label><br>
                 <input type="text" id="email" name="email"><br>

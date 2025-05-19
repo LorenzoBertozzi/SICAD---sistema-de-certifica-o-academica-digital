@@ -1,9 +1,11 @@
 <?php
+    if(!isset($_SESSION)) {
+        session_start();
+    }
 
-if(!isset($_SESSION)) {
-    session_start();
-}
+    session_destroy();
 
-session_destroy();
+    echo "<script> alert('Logout Realizado');</script>";
 
-header("Location: index.php");
+    header("Location: ../view/site/login.php");
+?>

@@ -1,7 +1,7 @@
 <?php
 
     $usuario = 'root';
-    $senha = '91827364';
+    $senha = 'lince';
     $database = 'mydb';
     $host = 'localhost';
 
