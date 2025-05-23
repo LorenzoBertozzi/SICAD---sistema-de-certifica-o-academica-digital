@@ -1,244 +1,228 @@
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+-- Criação do schema
+CREATE SCHEMA IF NOT EXISTS SICAD;
+USE SICAD;
 
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8mb4;
-USE `mydb` ;
+-- Tabela de Usuário
+CREATE TABLE Usuario (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    cpf VARCHAR(20) NULL,
+    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    telefone VARCHAR(20) NULL,
+    assinatura BLOB NULL
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`API_pagamento`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`API_pagamento` (
-  `id_proprietario` INT NOT NULL AUTO_INCREMENT,
-  `telefone_proprietario` VARCHAR(20) NULL,
-  `valor_total_caixa` DECIMAL(10,2) NULL,
-  `secret_key` VARCHAR(255) NULL,
-  `email_proprietario` VARCHAR(100) NULL,
-  `cpf_cnpj` VARCHAR(20) NULL,
-  `num_conta_corrente` VARCHAR(20) NULL,
-  PRIMARY KEY (`id_proprietario`))
-ENGINE = InnoDB;
+-- Tabela de Modalidade (deve vir antes de Atividade)
+CREATE TABLE Modalidade (
+    codigo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome ENUM('presencial', 'online', 'hibrido') NOT NULL
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`usuario`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
-  `id_usuario` INT NOT NULL AUTO_INCREMENT,
-  `assinatura_usuario` BLOB NULL,
-  `telefone_usuario` VARCHAR(20) NULL,
-  `email_usuario` VARCHAR(100) NOT NULL,
-  `nome_usuario` VARCHAR(100) NOT NULL,
-  `senha_usuario` VARCHAR(255) NOT NULL,
-  `cpf_usuario` VARCHAR(14) NOT NULL,
-  `data_cadastro_usuario` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_usuario`),
-  UNIQUE INDEX `email_usuario_UNIQUE` (`email_usuario` ASC),
-  UNIQUE INDEX `cpf_usuario_UNIQUE` (`cpf_usuario` ASC))
-ENGINE = InnoDB;
+-- Tabela de Evento
+CREATE TABLE Evento (
+    codigo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    descricao TEXT,
+    nome VARCHAR(100),
+    data_inicio DATE,
+    data_fim DATE,
+    responsavel_evento VARCHAR(255)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`pagamento`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`pagamento` (
-  `id_pagamento` INT NOT NULL AUTO_INCREMENT,
-  `taxa_pagamento` DECIMAL(5,2) NOT NULL,
-  `data_pagamento` DATETIME NOT NULL,
-  `data_vencimento_pagamento` DATETIME NOT NULL,
-  `status_pagamento` ENUM('pendente', 'pago', 'cancelado', 'estornado') NOT NULL,
-  `valor_pagamento` DECIMAL(10,2) NOT NULL,
-  `tipo_pagamento` ENUM('credito', 'debito', 'pix', 'boleto') NOT NULL,
-  `API_pagamento_id_proprietario` INT NOT NULL,
-  `usuario_id_usuario` INT NOT NULL,
-  PRIMARY KEY (`id_pagamento`),
-  INDEX `fk_pagamento_API_pagamento1_idx` (`API_pagamento_id_proprietario` ASC),
-  INDEX `fk_pagamento_usuario1_idx` (`usuario_id_usuario` ASC),
-  CONSTRAINT `fk_pagamento_API_pagamento1`
-    FOREIGN KEY (`API_pagamento_id_proprietario`)
-    REFERENCES `mydb`.`API_pagamento` (`id_proprietario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_pagamento_usuario1`
-    FOREIGN KEY (`usuario_id_usuario`)
-    REFERENCES `mydb`.`usuario` (`id_usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+-- Tabela de Atividade
+CREATE TABLE Atividade (
+    ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    informacoes_atividade TEXT,
+    carga_horaria INT,
+    nome VARCHAR(100),
+    palestrante VARCHAR(100),
+    status_atividade ENUM('confirmada', 'cancelada', 'realizada'),
+    num_participantes INT,
+    fk_Evento_codigo INT NOT NULL,
+    fk_Modalidade_codigo INT NOT NULL,
+    FOREIGN KEY (fk_Evento_codigo) REFERENCES Evento(codigo),
+    FOREIGN KEY (fk_Modalidade_codigo) REFERENCES Modalidade(codigo)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`participante`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`participante` (
-  `instituicao_participante` VARCHAR(100) NULL,
-  `id_usuario` INT NOT NULL,
-  PRIMARY KEY (`id_usuario`),
-  CONSTRAINT `fk_participante_usuario`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `mydb`.`usuario` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+-- Tabela de API de Pagamento
+CREATE TABLE API_pagamento (
+    id_proprietario INT NOT NULL PRIMARY KEY,
+    valor_total_em_caixa DECIMAL(10,2),
+    secret_key VARCHAR(255),
+    cpf_cnpj VARCHAR(255),
+    num_conta_corrente VARCHAR(30),
+    nome_proprietario VARCHAR(255),
+    telefone_proprietario VARCHAR(30)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`organizador`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`organizador` (
-  `departamento_organizador` VARCHAR(45) NULL,
-  `nivel_acesso_organizador` ENUM('admin', 'organizador', 'assistente') NOT NULL,
-  `id_usuario` INT NOT NULL,
-  PRIMARY KEY (`id_usuario`),
-  CONSTRAINT `fk_organizador_usuario1`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `mydb`.`usuario` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+-- Tabela de Tipo de Pagamento
+CREATE TABLE Pagamento_tipo_pagamento (
+    codigo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    taxa_emolumentos DECIMAL(10,2),
+    descricao ENUM('credito', 'debito', 'pix', 'boleto'),
+    fk_API_pagamento_id_proprietario INT,
+    FOREIGN KEY (fk_API_pagamento_id_proprietario) REFERENCES API_pagamento(id_proprietario)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`evento`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`evento` (
-  `id_evento` INT NOT NULL AUTO_INCREMENT,
-  `nome_evento` VARCHAR(100) NOT NULL,
-  `data_inicio_evento` DATETIME NOT NULL,
-  `data_fim_evento` DATETIME NOT NULL,
-  `descricao_evento` TEXT NULL,
-  `id_organizador_evento` INT NOT NULL,
-  PRIMARY KEY (`id_evento`),
-  INDEX `fk_evento_organizador1_idx` (`id_organizador_evento` ASC),
-  CONSTRAINT `fk_evento_organizador1`
-    FOREIGN KEY (`id_organizador_evento`)
-    REFERENCES `mydb`.`organizador` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+-- Tabela realiza (relacionamento entre Usuário e Pagamento)
+CREATE TABLE Realiza (
+    fk_Usuario_ID INT NOT NULL,
+    fk_Pagamento_tipo_pagamento_codigo INT NOT NULL,
+    valor_pago DECIMAL(10,2),
+    data_vencimento DATE,
+    data_do_pagamento DATE,
+    status_ ENUM('pendente', 'pago', 'cancelado', 'estornado') NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID),
+    FOREIGN KEY (fk_Pagamento_tipo_pagamento_codigo) REFERENCES Pagamento_tipo_pagamento(codigo)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`modalidade`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`modalidade` (
-  `id_modalidade` INT NOT NULL AUTO_INCREMENT,
-  `nome_modalidade` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_modalidade`))
-ENGINE = InnoDB;
+-- Tabela Gerencia (relacionamento entre Usuário e Evento)
+CREATE TABLE Gerencia (
+    fk_Usuario_ID INT NOT NULL,
+    fk_Evento_codigo INT NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID),
+    FOREIGN KEY (fk_Evento_codigo) REFERENCES Evento(codigo)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`atividade`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`atividade` (
-  `id_atividade` INT NOT NULL AUTO_INCREMENT,
-  `nome_atividade` VARCHAR(100) NOT NULL,
-  `status_atividade` ENUM('planejada', 'confirmada', 'cancelada', 'realizada') NOT NULL,
-  `ministrante_atividade` VARCHAR(100) NULL,
-  `descricao_atividade` TEXT NULL,
-  `id_evento` INT NOT NULL,
-  `id_modalidade` INT NOT NULL,
-  PRIMARY KEY (`id_atividade`),
-  INDEX `fk_atividade_evento1_idx` (`id_evento` ASC),
-  INDEX `fk_atividade_modalidade1_idx` (`id_modalidade` ASC),
-  CONSTRAINT `fk_atividade_evento1`
-    FOREIGN KEY (`id_evento`)
-    REFERENCES `mydb`.`evento` (`id_evento`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_atividade_modalidade1`
-    FOREIGN KEY (`id_modalidade`)
-    REFERENCES `mydb`.`modalidade` (`id_modalidade`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+-- Tabela Participa (relacionamento entre Usuário e Atividade)
+CREATE TABLE Participa (
+    fk_Usuario_ID INT NOT NULL,
+    fk_Atividade_ID INT NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID),
+    FOREIGN KEY (fk_Atividade_ID) REFERENCES Atividade(ID)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`assinatura`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`assinatura` (
-  `id_assinatura` INT NOT NULL AUTO_INCREMENT,
-  `assinatura_organizador` BLOB NOT NULL,
-  `assinatura_participante` BLOB NULL,
-  `assinatura_ministrante` BLOB NULL,
-  `data_assinatura` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_assinatura`))
-ENGINE = InnoDB;
+-- Tabela de Certificados
+CREATE TABLE Certificado (
+    codigo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    data_emissao DATE,
+    texto_certificado TEXT,
+    descricao TEXT,
+    carga_horaria INT,
+    template BLOB,
+    qr_code BLOB,
+    fk_Usuario_ID INT NOT NULL,
+    fk_Atividade_ID INT NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID),
+    FOREIGN KEY (fk_Atividade_ID) REFERENCES Atividade(ID)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`certificado`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`certificado` (
-  `id_certificado` INT NOT NULL AUTO_INCREMENT,
-  `carga_horaria_certificado` INT NULL,
-  `texto_certificado` TEXT NULL,
-  `data_emissao_certificado` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `template_certificado` BLOB NULL,
-  `qr_code_certificado` BLOB NOT NULL,
-  `id_usuario` INT NOT NULL,
-  `id_atividade` INT NOT NULL,
-  `id_assinatura` INT NOT NULL,
-  PRIMARY KEY (`id_certificado`),
-  INDEX `fk_certificado_participante1_idx` (`id_usuario` ASC),
-  INDEX `fk_certificado_atividade1_idx` (`id_atividade` ASC),
-  INDEX `fk_certificado_assinatura1_idx` (`id_assinatura` ASC),
-  CONSTRAINT `fk_certificado_participante1`
-    FOREIGN KEY (`id_usuario`)
-    REFERENCES `mydb`.`participante` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_certificado_atividade1`
-    FOREIGN KEY (`id_atividade`)
-    REFERENCES `mydb`.`atividade` (`id_atividade`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_certificado_assinatura1`
-    FOREIGN KEY (`id_assinatura`)
-    REFERENCES `mydb`.`assinatura` (`id_assinatura`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+-- Tabela de Tipos de usuário
+CREATE TABLE Tipo (
+    codigo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    descricao ENUM('participante', 'organizador', 'administrador_site')
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`participante_evento`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`participante_evento` (
-  `evento_id_evento` INT NOT NULL,
-  `participante_id_usuario` INT NOT NULL,
-  PRIMARY KEY (`evento_id_evento`, `participante_id_usuario`),
-  INDEX `fk_evento_has_participante_participante1_idx` (`participante_id_usuario` ASC),
-  INDEX `fk_evento_has_participante_evento1_idx` (`evento_id_evento` ASC),
-  CONSTRAINT `fk_evento_has_participante_evento1`
-    FOREIGN KEY (`evento_id_evento`)
-    REFERENCES `mydb`.`evento` (`id_evento`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_evento_has_participante_participante1`
-    FOREIGN KEY (`participante_id_usuario`)
-    REFERENCES `mydb`.`participante` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+-- Tabela e_do (relacionamento entre Tipo e Usuário)
+CREATE TABLE e_do (
+    fk_Tipo_codigo INT NOT NULL,
+    fk_Usuario_ID INT NOT NULL,
+    FOREIGN KEY (fk_Tipo_codigo) REFERENCES Tipo(codigo),
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID)
+);
 
--- -----------------------------------------------------
--- Table `mydb`.`atividade_participante`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`atividade_participante` (
-  `atividade_id_atividade` INT NOT NULL,
-  `participante_id_usuario` INT NOT NULL,
-  `presenca` TINYINT NOT NULL DEFAULT 0,
-  PRIMARY KEY (`atividade_id_atividade`, `participante_id_usuario`),
-  INDEX `fk_atividade_has_participante_participante1_idx` (`participante_id_usuario` ASC),
-  INDEX `fk_atividade_has_participante_atividade1_idx` (`atividade_id_atividade` ASC),
-  CONSTRAINT `fk_atividade_has_participante_atividade1`
-    FOREIGN KEY (`atividade_id_atividade`)
-    REFERENCES `mydb`.`atividade` (`id_atividade`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_atividade_has_participante_participante1`
-    FOREIGN KEY (`participante_id_usuario`)
-    REFERENCES `mydb`.`participante` (`id_usuario`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
+-- Tabela Assinatura (relacionada a um usuário)
+CREATE TABLE Assinatura (
+    id_assinatura INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    fk_Usuario_ID INT NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID)
+);
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- Tabela de Arquivos CSV (importação de dados)
+CREATE TABLE Arquivo_CSV (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome_atividade VARCHAR(100),
+    num_participantes_atividade INT,
+    num_participantes_evento INT,
+    num_certificados_emitidos INT,
+    palestrante_atividade VARCHAR(100),
+    carga_horaria_atividade INT,
+    nome_evento VARCHAR(100)
+);
+
+-- Tabela importa (relacionamento entre usuário e arquivos importados)
+CREATE TABLE Importa (
+    fk_Usuario_ID INT NOT NULL,
+    fk_Arquivo_CSV_id INT NOT NULL,
+    FOREIGN KEY (fk_Usuario_ID) REFERENCES Usuario(ID),
+    FOREIGN KEY (fk_Arquivo_CSV_id) REFERENCES Arquivo_CSV(id)
+);
+
+
+-- inserts gerados por IA
+
+-- Usuários
+INSERT INTO Usuario (ID, nome, email, senha, cpf, data_cadastro, telefone, assinatura)
+VALUES 
+(NULL, 'Ana Silva', 'ana@example.com', 'senha123', NULL, '2024-01-01', '31988889999', NULL),
+(NULL, 'Bruno Costa', 'bruno@example.com', 'senha456', '98765432100', '2024-01-05', '21977778888', NULL);
+
+-- Modalidades
+INSERT INTO Modalidade (nome)
+VALUES 
+('presencial'),
+('online'),
+('hibrido');
+
+-- Evento
+INSERT INTO Evento (descricao, nome, data_inicio, data_fim, responsavel_evento)
+VALUES 
+('Feira de tecnologia e inovação', 'TechFest 2024', '2024-06-10', '2024-06-15', 'Ana Silva');
+
+-- Atividade
+INSERT INTO Atividade (informacoes_atividade, carga_horaria, nome, palestrante, status_atividade, num_participantes, fk_Evento_codigo, fk_Modalidade_codigo)
+VALUES 
+('Palestra sobre IA', 2, 'Inteligência Artificial na Prática', 'Dr. Pedro Rocha', 'confirmada', 50, 1, 1),
+('Oficina de robótica', 4, 'Robótica com Arduino', 'Profa. Carla Mendes', 'confirmada', 30, 1, 3);
+
+-- Tipos de usuário
+INSERT INTO Tipo (descricao)
+VALUES 
+('participante'),
+('organizador'),
+('administrador_site');
+
+-- Relação e_do (usuário com tipo)
+INSERT INTO e_do (fk_Tipo_codigo, fk_Usuario_ID)
+VALUES 
+(1, 1),
+(2, 2);
+
+-- API de pagamento
+INSERT INTO API_pagamento (id_proprietario, valor_total_em_caixa, secret_key, cpf_cnpj, num_conta_corrente, nome_proprietario, telefone_proprietario)
+VALUES 
+(1, 10000.00, 'sk_test_12345', '12345678901', '00012345-6', 'Ana Silva', '31988889999');
+
+-- Tipos de pagamento
+INSERT INTO Pagamento_tipo_pagamento (taxa_emolumentos, descricao, fk_API_pagamento_id_proprietario)
+VALUES 
+(5.00, 'credito', 1),
+(2.00, 'pix', 1);
+
+-- Realiza (pagamento feito por usuário)
+INSERT INTO Realiza (fk_Usuario_ID, fk_Pagamento_tipo_pagamento_codigo, valor_pago, data_vencimento, data_do_pagamento, status_)
+VALUES 
+(1, 1, 100.00, '2024-06-01', '2024-06-01', 'pago'),
+(2, 2, 50.00, '2024-06-01', NULL, 'pendente');
+
+-- Participação em atividades
+INSERT INTO Participa (fk_Usuario_ID, fk_Atividade_ID)
+VALUES 
+(1, 1),
+(2, 2);
+
+-- Certificados emitidos
+INSERT INTO Certificado (data_emissao, texto_certificado, descricao, carga_horaria, template, qr_code, fk_Usuario_ID, fk_Atividade_ID)
+VALUES 
+('2024-06-16', 'Certificamos que Ana Silva participou da atividade.', 'Participação na palestra de IA', 2, NULL, NULL, 1, 1);
+
+-- Arquivo CSV
+INSERT INTO Arquivo_CSV (nome_atividade, num_participantes_atividade, num_participantes_evento, num_certificados_emitidos, palestrante_atividade, carga_horaria_atividade, nome_evento)
+VALUES 
+('Inteligência Artificial na Prática', 50, 200, 50, 'Dr. Pedro Rocha', 2, 'TechFest 2024');
+
+-- Importa (relação usuário/arquivo)
+INSERT INTO Importa (fk_Usuario_ID, fk_Arquivo_CSV_id)
+VALUES 
+(1, 1);

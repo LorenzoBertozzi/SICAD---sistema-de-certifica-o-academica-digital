@@ -3,7 +3,7 @@
         session_start();
     }
     
-    if(!isset($_SESSION['id_usuario'])) {
+    if(!isset($_SESSION['ID'])) {
         //echo ("<script> alert('Você não pode acessar esta página porque não está logado.') </script>");
         header("Location: login.php");
     }

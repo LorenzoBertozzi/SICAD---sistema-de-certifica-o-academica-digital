@@ -2,7 +2,7 @@
 
     $usuario = 'root';
     $senha = 'lince';
-    $database = 'mydb';
+    $database = 'sicad';
     $host = 'localhost';
 
     $mysqli = new mysqli($host, $usuario, $senha, $database);
@@ -11,4 +11,7 @@
         die("Falha ao conectar ao banco de dados: " . $mysqli->error);
     }
 
+    if ($mysqli->connect_errno) {
+        die("Falha na conexão: " . $mysqli->connect_error);
+    }
 ?>

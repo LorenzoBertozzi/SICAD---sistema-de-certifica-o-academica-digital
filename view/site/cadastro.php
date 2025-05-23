@@ -1,46 +1,59 @@
 <?php
-    if (isset($_POST['email'])) {
-        include('../../controller/conexao.php');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require('../../controller/conexao.php');
 
-        $nome = $_POST['nome'];
-        $email = $_POST['email'];
-        $senha = $_POST['senha'];
-        $confirmar_senha = $_POST['confirmar_senha'];
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
+    $confirmar_senha = $_POST['confirmar_senha'] ?? '';
 
-        if (empty($senha) || empty($confirmar_senha)) {
-            echo "<script> alert('Por favor, preencha os dois campos de senha.'); </script> ";
-        } else {
-            if ($senha === $confirmar_senha) {
-                $verificar_sql = "SELECT id_usuario FROM usuario WHERE email_usuario = ? OR nome_usuario = ?";
-                $stmt = $mysqli->prepare($verificar_sql);
-                $stmt->bind_param("ss", $email, $nome);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-
-                if ($resultado->num_rows > 0) {
-                    echo "<script> alert('Email ou nome já cadastrados. Tente usar outro.'); </script> ";
-                } else {
-                    $senha_encript = password_hash($senha, PASSWORD_DEFAULT);
-
-                    $inserir_sql = "INSERT INTO `usuario` (`id_usuario`, `assinatura_usuario`, `telefone_usuario`, `email_usuario`, `nome_usuario`, `senha_usuario`, `cpf_usuario`, `data_cadastro_usuario`)
-                                    VALUES (NULL, NULL, NULL, ?, ?, ?, NULL, current_timestamp())";
-                    
-                    $stmt = $mysqli->prepare($inserir_sql);
-                    $stmt->bind_param("sss", $email, $nome, $senha_encript);
-                    
-                    if ($stmt->execute()) {
-                        echo "<script> alert('Cadastro realizado com sucesso!'); </script> ";
-                    } else {                
-                        echo "<script> alert('Erro ao cadastrar. Tente novamente mais tarde.'); </script> ";
-                    }
-                }
-                $stmt->close();
-            } else {
-                echo "<script> alert('As senhas não correspondem. Tente novamente.'); </script> ";
-            }
-        }
+    if (empty($nome) || empty($email) || empty($senha) || empty($confirmar_senha)) {
+        echo "<script>alert('Por favor, preencha todos os campos.');</script>";
+        return;
     }
+    if ($senha !== $confirmar_senha) {
+        echo "<script>alert('As senhas não correspondem. Tente novamente.');</script>";
+        return;
+    }
+
+    $stmt = $mysqli->prepare("SELECT ID FROM Usuario WHERE email = ? OR nome = ?");
+    $stmt->bind_param("ss", $email, $nome);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($resultado->num_rows > 0) {
+        echo "<script>alert('E-mail ou nome já cadastrados. Tente usar outro.');</script>";
+        $stmt->close();
+        return;
+    }
+
+    $stmt->close();
+
+    $senha_encriptada = password_hash($senha, PASSWORD_DEFAULT);
+
+    $stmt = $mysqli->prepare("INSERT INTO Usuario (nome, email, senha, cpf, data_cadastro, telefone, assinatura)
+                              VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP(), NULL, NULL)");
+    $stmt->bind_param("sss", $nome, $email, $senha_encriptada);
+
+    if ($stmt->execute()) {
+        $usuario_id = $mysqli->insert_id;
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        
+        $_SESSION['ID'] = $usuario_id;
+        $_SESSION['nome'] = $nome;
+
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "<script>alert('Erro ao cadastrar. Tente novamente mais tarde.');</script>";
+    }
+    $stmt->close();
+    $mysqli->close();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

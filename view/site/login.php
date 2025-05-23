@@ -1,37 +1,46 @@
 <?php
-
-//INSERT INTO `usuario` (`id_usuario`, `assinatura_usuario`, `telefone_usuario`, `email_usuario`, `nome_usuario`, `senha_usuario`, `cpf_usuario`, `data_cadastro_usuario`) VALUES (NULL, NULL, '00 0 0000-0000', 'teste@teste.com', 'Testador', '1234', NULL, current_timestamp());
-
 include('../../controller/conexao.php');
 
-
-if(isset($_POST['email']) || isset($_POST['senha'])) {
-
-    if(strlen($_POST['email']) == 0) {
-        echo "Preencha seu e-mail";
-    } else if(strlen($_POST['senha']) == 0) {
-        echo "Preencha sua senha";
+if (isset($_POST['email']) || isset($_POST['senha'])) {
+    if (strlen($_POST['email']) == 0) {
+        echo "<script>alert('Preencha seu e-mail');</script>";
+    } else if (strlen($_POST['senha']) == 0) {
+        echo "<script>alert('Preencha sua senha');</script>";
     } else {
-        $email = $mysqli->real_escape_string($_POST['email']);
-        $senha = $mysqli->real_escape_string($_POST['senha']);
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
 
-        $sql_code = "SELECT * FROM usuario WHERE email_usuario = '$email'";
-        $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
+        $stmt = $mysqli->prepare("SELECT ID, nome, senha FROM usuario WHERE email = ?");
+        if (!$stmt) {
+            die("Erro ao preparar statement: " . $mysqli->error);
+        }
 
-        $usuario = $sql_query->fetch_assoc();
-        if(password_verify($senha, $usuario['senha_usuario'])){
-            if(!isset($_SESSION)) {
-                session_start();
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $usuario = $result->fetch_assoc();
+
+            if (password_verify($senha, $usuario['senha'])) {
+                $_SESSION['ID'] = $usuario['ID'];
+                $_SESSION['nome'] = $usuario['nome'];
+
+                echo "<script>alert('Senha correta');</script>";
+
+                header("Location: index.php");
+                //exit();
+            } else {
+                echo "<script>alert('Senha incorreta');</script>";
             }
-
-            $_SESSION['id_usuario'] = $usuario['id_usuario'];
-            $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
-
-            header("Location: index.php");
+        } else {
+            echo "<script>alert('Usuário não encontrado');</script>";
         }
-        else {
-        echo "<script>alert('Falha ao logar! E-mail ou senha incorretos');</script>";
-        }
+        $stmt->close();
+        $mysqli->close();
     }
 }
 ?>
